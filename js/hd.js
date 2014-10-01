@@ -1,14 +1,14 @@
-var cubeElements = document.querySelectorAll('.cube'),
-	rows = document.querySelectorAll('.row'),
-	cubes = [];
+var $rows = $('.row'),
+	hampsterCubes = [];
 
 function HampsterCube(element, startIndex){
 	this.index = startIndex;
 	this.element = element;
+	this.element.className = 'cube ' + this.classes[startIndex];
 	this.$element = $(element);
 	this.boundAdvance = this.advance.bind(this);
 	this.$element.on('click', this.boundAdvance);
-	this.$element.on('rotate', this.boundAdvance);
+	this.$element.parent().on('rotate', this.boundAdvance);
 }
 
 HampsterCube.prototype.classes = [
@@ -26,18 +26,18 @@ HampsterCube.prototype.advance = function(event){
 	this.element.className = "cube " + this.classes[this.index];
 }
 
-// var spinInterval = setInterval(function(){
-// 	cubes.forEach(function(hampsterCube){
-// 		hampsterCube.advance();
-// 	});
-// }, 2000);
-
-Array.prototype.forEach.call(cubeElements, function(cubeElement){
-	cubes.push(new HampsterCube(cubeElement, 0));
+//set up each row to be a different side of the cube
+var startingIndex = 0;
+$rows.each(function(){
+	$(this).find('.cube').each(function(){
+		hampsterCubes.push(new HampsterCube(this, startingIndex));
+	});
+	startingIndex++;
 });
 
-Array.prototype.forEach.call(rows, function(row){
-		// var spinner = setInterval(function(){
-		// 	var 
-		// }, 10000);
-})
+//shift all cubes one after another
+var shiftIndex = 0;
+var shiftInterval = setInterval(function(){
+	hampsterCubes[shiftIndex].$element.trigger('rotate');
+	shiftIndex = (shiftIndex + 1) % hampsterCubes.length;
+}, 100);
