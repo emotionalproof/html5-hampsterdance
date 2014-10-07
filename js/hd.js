@@ -1,7 +1,12 @@
-var $rows = $('.row'),
-	$cubes = $('.cube'),
-	hampsterCubes = [],
-	CUBE_SIZE = 100;
+var	hampsterCubes = [],
+	CUBE_SIZE = 100,
+	rawTemplate = $('#template').html(),
+	compiledTemplate = 	Handlebars.compile(rawTemplate),
+	rowWidth = Math.floor(window.innerWidth / CUBE_SIZE),
+	columnHeight = Math.floor(window.innerHeight/ CUBE_SIZE),
+	NUM_CUBES = rowWidth * columnHeight,
+	columnIndex = 0,
+	startingIndex = 0;
 
 function HampsterCube(element, startIndex){
 	this.index = startIndex;
@@ -28,35 +33,29 @@ HampsterCube.prototype.advance = function(event){
 	this.element.className = "cube " + this.classes[this.index];
 }
 
-//set up each row to be a different side of the cube
-// var startingIndex = 0;
-// $rows.each(function(){
-// 	$(this).find('.cube').each(function(){
-// 		hampsterCubes.push(new HampsterCube(this, startingIndex));
-// 	});
-// 	startingIndex++;
-// });
+function setupHampsterDance(){	
+	var $container = $('#container');
+	$container.css({'width': rowWidth * 100});
 
-//set up each row depending on device width
-//TODO: set container dimensions based on device width
-var rowWidth = Math.floor(window.innerWidth / CUBE_SIZE),
-	columnIndex = 0,
-	startingIndex = 0;
+	$container.html(compiledTemplate({'cubes': new Array(NUM_CUBES)}));
 
-$('.container').css({'width': rowWidth * 100});
-$cubes.each(function(){
-	hampsterCubes.push(new HampsterCube(this, startingIndex));
-	columnIndex++;
-	if (columnIndex === rowWidth){
-		startingIndex++;
-		columnIndex = 0;
-	}
-});
+	$cubes = $('.cube')
+	$cubes.each(function(){
+		hampsterCubes.push(new HampsterCube(this, startingIndex));
+		columnIndex++;
+		if (columnIndex === rowWidth){
+			startingIndex++;
+			columnIndex = 0;
+		}
+	});
 
+	var shiftIndex = 0;
+	var shiftInterval = setInterval(function(){
+		hampsterCubes[shiftIndex].$element.trigger('rotate');
+		shiftIndex = (shiftIndex + 1) % hampsterCubes.length;
+	}, 100);
 
-//shift all cubes one after another
-var shiftIndex = 0;
-var shiftInterval = setInterval(function(){
-	hampsterCubes[shiftIndex].$element.trigger('rotate');
-	shiftIndex = (shiftIndex + 1) % hampsterCubes.length;
-}, 100);
+	$('audio')[0].play();
+}
+
+setupHampsterDance();
