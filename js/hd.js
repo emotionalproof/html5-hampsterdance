@@ -19,7 +19,7 @@ class HampsterCube {
 
   advance = () => {
     this.index = (this.index + 1) % this.classes.length;
-    this.element.className = "cube " + this.classes[this.index];
+    this.element.className = `cube ${this.classes[this.index]}`;
   }
 }
 
